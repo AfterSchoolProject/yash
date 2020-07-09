@@ -1,48 +1,105 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 /* import logo from './logo.svg'; */
+import Devices from './devices'
+import DeviceForm from './device_form'
+import EditDeviceForm from './edit_device_form'
+import axios from 'axios'
 import './App.css';
 
-const CLIENT_ID = '497f6e942c12049b25219e2e6d23ddfcbd3f3be7b7de3672d2bc79a36d0205d2'
-const REDIRECT_URI = 'http://localhost:3000/auth/redirect'
+const App = () => {
+  const devicesData = []
+  const initialFormState = {
+    id: null,
+    name: '',
+    description: '',
+    host: '',
+    port: '',
+    actions: []
+  }
 
-class App extends Component {
-  state = {
-    response: ''
-  };
+  const [devices, setDevices] = useState(devicesData)
+  const [editing, setEditing] = useState(false)
+  const [currentDevice, setCurrentDevice] = useState(initialFormState)
 
-  componentDidMount() {
-    if (window.location.href.match(/code=(.*)/)) {
-      const code =
-        window.location.href.match(/code=(.*)/)[1]
-      fetch('/api/session', {
-        method: 'POST',
-        headers: { "Content-Type": "application/json"},
-        mode: 'cors',
-        body: JSON.stringify({ code: code })
+  useEffect(() => {
+    axios.get('http://localhost:8080/devices')
+      .then(res => {
+        const devices = res.data
+        setDevices(devices)
       })
-          .then(res => {
-            return res.json()
-          })
-          .then(data => {
-            window.location = '/homepage'
-          })
-          .catch(error => {
-            console.log(error)
-          })
-    }
+  }, [])
+
+  const addDevice = (device) => {
+    axios.post('http://localhost:8080/devices', device)
+      .then(res => {
+        console.log(res)
+        setDevices([...devices, res.data])
+      })
   }
 
-  getAuthorization = () => {
-    window.location = `http://localhost:8000/oauth/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`
-  };
+  const editDevice = (device) => {
+    setEditing(true)
 
-  render() {
-    return (
-      <div className="App">
-        <button onClick={this.getAuthorization}>Submit</button>
+    setCurrentDevice({
+      id: device.id,
+      name: device.name,
+      description: device.description,
+      host: device.host,
+      port: device.port,
+      actions: device.actions
+    })
+  }
+
+  const updateDevice = (id, updatedDevice) => {
+    setEditing(false)
+
+    axios.put(`http://localhost:8080/devices/${id}`, updatedDevice)
+      .then(res => {
+        console.log(res)
+        setDevices(devices.map((device) => (device.id === id ? updatedDevice : device)))
+      })
+  }
+
+  const deleteDevice = (id) => {
+    axios.delete(`http://localhost:8080/devices/${id}`)
+      .then(res => {
+        console.log(res)
+        setDevices(devices.filter((device) => device.id !== id))
+      })
+  }
+
+  return ( 
+    <div className="container">
+      <h1>Devices</h1>
+      <div className="flew-row">
+        <div className="flex-large">
+          {editing ? (
+            <div>
+              <h2>Edit Device</h2>
+              <EditDeviceForm
+                setEditing={setEditing}
+                currentDevice={currentDevice}
+                updateDevice={updateDevice}
+              />
+            </div>
+          ) : (
+            <div>
+              <h2>Add Devices</h2>
+              <DeviceForm addDevice={addDevice} />
+            </div>
+          )}
+        </div>
+        <div className="flex-large">
+          <h2>View Devices</h2>
+          <Devices
+            devices={devices}
+            editDevice={editDevice}
+            deleteDevice={deleteDevice}
+          />
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default App;
