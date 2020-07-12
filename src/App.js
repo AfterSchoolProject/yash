@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-/* import logo from './logo.svg'; */
 import Devices from './devices'
 import DeviceForm from './device_form'
 import EditDeviceForm from './edit_device_form'
