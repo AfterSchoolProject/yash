@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import ActionForm from './action_form'
+import { BACKEND_HOST } from './constants'
 import axios from 'axios'
 
 const EditDeviceForm = (props) => {
@@ -12,7 +13,7 @@ const EditDeviceForm = (props) => {
   }
 
   const addAction = (action) => {
-    axios.post(`http://localhost:8080/devices/${device.id}/actions`, action)
+    axios.post(`${BACKEND_HOST}/devices/${device.id}/actions`, action)
       .then(res => {
         props.updateDevice(device.id, {...device, actions: [...device.actions, res.data]})
       })

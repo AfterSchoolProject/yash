@@ -1,9 +1,10 @@
 import React from 'react'
 import axios from 'axios'
+import { BACKEND_HOST } from './constants'
 
 const Actions = (props) => {
   const activateAction = (device_id, action_id) => {
-    axios.post(`http://localhost:8080/devices/${device_id}/actions/${action_id}`)
+    axios.post(`${BACKEND_HOST}/devices/${device_id}/actions/${action_id}`)
       .then(res => {
         console.log("Message Sent")
       })

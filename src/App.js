@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BACKEND_HOST } from './constants'
 import Devices from './devices'
 import DeviceForm from './device_form'
 import EditDeviceForm from './edit_device_form'
@@ -21,7 +22,7 @@ const App = () => {
   const [currentDevice, setCurrentDevice] = useState(initialFormState)
 
   useEffect(() => {
-    axios.get('http://localhost:8080/devices')
+    axios.get(`${BACKEND_HOST}/devices`)
       .then(res => {
         const devices = res.data
         setDevices(devices)
@@ -29,7 +30,7 @@ const App = () => {
   }, [])
 
   const addDevice = (device) => {
-    axios.post('http://localhost:8080/devices', device)
+    axios.post(`${BACKEND_HOST}/devices`, device)
       .then(res => {
         console.log(res)
         setDevices([...devices, res.data])
@@ -52,7 +53,7 @@ const App = () => {
   const updateDevice = (id, updatedDevice) => {
     setEditing(false)
 
-    axios.put(`http://localhost:8080/devices/${id}`, updatedDevice)
+    axios.put(`${BACKEND_HOST}/devices/${id}`, updatedDevice)
       .then(res => {
         console.log(res)
         setDevices(devices.map((device) => (device.id === id ? updatedDevice : device)))
@@ -60,7 +61,7 @@ const App = () => {
   }
 
   const deleteDevice = (id) => {
-    axios.delete(`http://localhost:8080/devices/${id}`)
+    axios.delete(`${BACKEND_HOST}/devices/${id}`)
       .then(res => {
         console.log(res)
         setDevices(devices.filter((device) => device.id !== id))
