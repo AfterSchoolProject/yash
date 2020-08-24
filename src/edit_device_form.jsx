@@ -13,7 +13,7 @@ const EditDeviceForm = (props) => {
   }
 
   const addAction = (action) => {
-    axios.post(`${BACKEND_HOST}/devices/${device.id}/actions`, action)
+    axios.post(`${BACKEND_HOST}/devices/${device.id}/actions`, action, { withCredentials: true })
       .then(res => {
         props.updateDevice(device.id, {...device, actions: [...device.actions, res.data]})
       })
@@ -21,6 +21,7 @@ const EditDeviceForm = (props) => {
 
   return (
     <div>
+      <h1>Edit Device {device.name}</h1>
       <form
         onSubmit={(event) => {
           event.preventDefault()

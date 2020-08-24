@@ -4,7 +4,7 @@ import { BACKEND_HOST } from './constants'
 
 const Actions = (props) => {
   const activateAction = (device_id, action_id) => {
-    axios.post(`${BACKEND_HOST}/devices/${device_id}/actions/${action_id}`)
+    axios.post(`${BACKEND_HOST}/devices/${device_id}/actions/${action_id}`, {}, { withCredentials: true })
       .then(res => {
         console.log("Message Sent")
       })
@@ -20,6 +20,11 @@ const Actions = (props) => {
         onClick={() => activateAction(props.device.id, action.id)}
       >
         Send
+      </button>
+      <button
+        onClick={() => props.deleteAction(props.device.id, action.id)}
+      >
+        Delete
       </button>
     </div>
   ))
